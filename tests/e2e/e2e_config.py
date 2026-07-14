@@ -30,6 +30,24 @@ UI_PASSWORD = os.environ.get("E2E_UI_PASSWORD", MASTER_KEY)
 # test runs somewhere the compose stub is not visible from.
 MCP_STUB_URL = os.environ.get("E2E_MCP_STUB_URL", "http://mcp-stub:8765/mcp")
 
+# The stub's sibling mounts (see mcp/stub/stub_server.py): a second anonymous
+# upstream with a disjoint tool set, an X-API-Key-guarded upstream, a
+# Bearer-guarded upstream, and the OAuth2 client_credentials token endpoint
+# that mints the only token the Bearer guard accepts. Derived from MCP_STUB_URL
+# so one override relocates the whole stub.
+_MCP_STUB_BASE = MCP_STUB_URL.removesuffix("/mcp")
+MCP_STUB_SECOND_URL = f"{_MCP_STUB_BASE}/second/mcp"
+MCP_STUB_APIKEY_URL = f"{_MCP_STUB_BASE}/apikey/mcp"
+MCP_STUB_OAUTH_URL = f"{_MCP_STUB_BASE}/oauth/mcp"
+MCP_STUB_TOKEN_URL = f"{_MCP_STUB_BASE}/oauth/token"
+
+# Deterministic test-only credentials; must mirror mcp/stub/stub_server.py.
+MCP_STUB_UPSTREAM_API_KEY = "e2e-stub-upstream-api-key"
+MCP_STUB_OAUTH_CLIENT_ID = "e2e-stub-oauth-client-id"
+MCP_STUB_OAUTH_CLIENT_SECRET = "e2e-stub-oauth-client-secret"
+MCP_STUB_OAUTH_SCOPE = "tools:read"
+MCP_STUB_OAUTH_ACCESS_TOKEN = "e2e-stub-minted-access-token"
+
 # Writes on the proxy are eventually consistent (e.g. spend rows flush on
 # proxy_batch_write_at, ~60s). Read-backs poll to this deadline, never sleep-once.
 POLL_TIMEOUT = float(os.environ.get("E2E_POLL_TIMEOUT", "120"))
